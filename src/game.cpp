@@ -2971,6 +2971,7 @@ void game::debug()
         _( "Show debug message" ),              // 33
         _( "Crash game (test crash handling)" ),// 34
         _( "Quit to Main Menu" ),               // 35
+        _( "TEST Observe" ),                    // 36
     } );
     refresh_all();
     switch( action ) {
@@ -3331,6 +3332,9 @@ void game::debug()
                 u.moves = 0;
                 uquit = QUIT_NOSAVED;
             }
+            break;
+        case 36:
+            popup("TEST Observe");
             break;
     }
     catacurses::erase();
@@ -10133,6 +10137,8 @@ bool game::prompt_dangerous_tile( const tripoint &dest_loc ) const
 
 bool game::plmove( int dx, int dy, int dz )
 {
+    return obsmove(dx, dy, dz);
+
     if( ( !check_safe_mode_allowed() ) || u.has_active_mutation( trait_SHELL2 ) ) {
         if( u.has_active_mutation( trait_SHELL2 ) ) {
             add_msg( m_warning, _( "You can't move while in your shell.  Deactivate it to go mobile." ) );
@@ -10403,6 +10409,36 @@ bool game::plmove( int dx, int dy, int dz )
     } else if( m.ter( dest_loc ) == t_door_bar_locked ) {
         add_msg( _( "You rattle the bars but the door is locked!" ) );
     }
+    return false;
+}
+
+bool game::obsmove(int dx, int dy, int dz)
+{
+    tripoint dest_loc;
+
+    if (tile_iso && use_tiles && !u.has_destination()) {
+        rotate_direction_cw(dx, dy);
+    }
+    dest_loc.x = u.posx() + dx;
+    dest_loc.y = u.posy() + dy;
+    dest_loc.z = u.posz() + dz;
+
+    if (dest_loc == u.pos()) {
+        // Well that sure was easy
+        return true;
+    }
+
+    if (dz == 0 && ramp_move(dest_loc)) {
+        // TODO: Make it work nice with automove (if it doesn't do so already?)
+        return false;
+    }
+
+    dbg(D_PEDANTIC_INFO) << "game:obsmove: From (" <<
+        u.posx() << "," << u.posy() << "," << u.posz() << ") to (" <<
+        dest_loc.x << "," << dest_loc.y << "," << dest_loc.z << ")";
+
+    place_player(dest_loc);
+
     return false;
 }
 
