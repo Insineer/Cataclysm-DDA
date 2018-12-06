@@ -2971,7 +2971,7 @@ void game::debug()
         _( "Show debug message" ),              // 33
         _( "Crash game (test crash handling)" ),// 34
         _( "Quit to Main Menu" ),               // 35
-        _( "TEST Observe" ),                    // 36
+        _( "Observe mode" ),                    // 36
     } );
     refresh_all();
     switch( action ) {
@@ -3334,7 +3334,11 @@ void game::debug()
             }
             break;
         case 36:
-            popup("TEST Observe");
+            u.set_camera_sync(!u.is_camera_synced());
+            if (u.is_camera_synced())
+                popup("Observe mode off");
+            else
+                popup("Observe mode on");
             break;
     }
     catacurses::erase();
@@ -10137,7 +10141,8 @@ bool game::prompt_dangerous_tile( const tripoint &dest_loc ) const
 
 bool game::plmove( int dx, int dy, int dz )
 {
-    return obsmove(dx, dy, dz);
+    if (!u.is_camera_synced())
+        obsmove(dx, dy, dz);
 
     if( ( !check_safe_mode_allowed() ) || u.has_active_mutation( trait_SHELL2 ) ) {
         if( u.has_active_mutation( trait_SHELL2 ) ) {
@@ -10155,9 +10160,7 @@ bool game::plmove( int dx, int dy, int dz )
         if( tile_iso && use_tiles && !u.has_destination() ) {
             rotate_direction_cw( dx, dy );
         }
-        dest_loc.x = u.posx() + dx;
-        dest_loc.y = u.posy() + dy;
-        dest_loc.z = u.posz() + dz;
+        dest_loc = u.pos() + tripoint(dx, dy, dz);
     }
 
     if( dest_loc == u.pos() ) {
@@ -10414,14 +10417,10 @@ bool game::plmove( int dx, int dy, int dz )
 
 bool game::obsmove(int dx, int dy, int dz)
 {
-    tripoint dest_loc;
-
     if (tile_iso && use_tiles && !u.has_destination()) {
         rotate_direction_cw(dx, dy);
     }
-    dest_loc.x = u.posx() + dx;
-    dest_loc.y = u.posy() + dy;
-    dest_loc.z = u.posz() + dz;
+    tripoint dest_loc = u.pos() + tripoint(dx, dy, dz);
 
     if (dest_loc == u.pos()) {
         // Well that sure was easy

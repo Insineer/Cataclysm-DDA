@@ -514,6 +514,7 @@ player::player() : Character()
     next_expected_position = cata::nullopt;
     death_drops = true;
     show_map_memory = true;
+    camera_synced = true;
 
     empty_traits();
 

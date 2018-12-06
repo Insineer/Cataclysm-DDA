@@ -186,6 +186,15 @@ class player : public Character
         bool is_npc() const override {
             return false;    // Overloaded for NPCs in npc.h
         }
+
+        bool is_camera_synced() const {
+            return camera_synced;
+        }
+
+        void set_camera_sync(bool sync) {
+            camera_synced = sync;
+        }
+
         /** Returns what color the player should be drawn as */
         nc_color basic_symbol_color() const override;
 
@@ -1675,6 +1684,8 @@ class player : public Character
         tripoint position;
 
         trap_map known_traps;
+
+        bool camera_synced;
 
         void store( JsonOut &jsout ) const;
         void load( JsonObject &jsin );
