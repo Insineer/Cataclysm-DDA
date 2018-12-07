@@ -187,6 +187,10 @@ class player : public Character
             return false;    // Overloaded for NPCs in npc.h
         }
 
+        bool is_observer_mode() const;
+
+        void set_observer_mode(bool value);
+
         /** Returns what color the player should be drawn as */
         nc_color basic_symbol_color() const override;
 
@@ -1425,7 +1429,7 @@ class player : public Character
         }
         inline void setpos( const tripoint &p ) override {
             position = p;
-            if (!g->is_observer_mode())
+            if (!is_observer_mode())
                 camera_position = position;
         }
         // Used only for observer mode purposes (see debug option)
@@ -1684,6 +1688,8 @@ class player : public Character
         tripoint camera_position;
 
         trap_map known_traps;
+
+        bool observer_mode;
 
         void store( JsonOut &jsout ) const;
         void load( JsonObject &jsin );

@@ -3334,8 +3334,8 @@ void game::debug()
             }
             break;
         case 36:
-            observer_mode = !observer_mode;
-            if (observer_mode)
+            u.set_observer_mode(!u.is_observer_mode());
+            if (u.is_observer_mode())
                 add_msg(m_info, _("Observe mode on"));
             else
                 add_msg(m_info, _("Observe mode off"));
@@ -10141,7 +10141,7 @@ bool game::prompt_dangerous_tile( const tripoint &dest_loc ) const
 
 bool game::plmove( int dx, int dy, int dz )
 {
-    if (observer_mode)
+    if (u.is_observer_mode())
         return obsmove(dx, dy, dz);
 
     if( ( !check_safe_mode_allowed() ) || u.has_active_mutation( trait_SHELL2 ) ) {
@@ -13142,11 +13142,6 @@ std::vector<npc *> game::allies()
     return get_npcs_if( [&]( const npc & guy ) {
         return guy.is_friend();
     } );
-}
-
-bool game::is_observer_mode() const 
-{
-    return observer_mode;
 }
 
 std::vector<Creature *> game::get_creatures_if( const std::function<bool( const Creature & )>

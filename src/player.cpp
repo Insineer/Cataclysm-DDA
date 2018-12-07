@@ -514,7 +514,7 @@ player::player() : Character()
     next_expected_position = cata::nullopt;
     death_drops = true;
     show_map_memory = true;
-    camera_synced = true;
+    observer_mode = false;
 
     empty_traits();
 
@@ -1944,6 +1944,14 @@ int player::swim_speed() const
         ret = 30;
     }
     return ret;
+}
+
+bool player::is_observer_mode() const {
+    return observer_mode;
+}
+
+void player::set_observer_mode(bool value) {
+    observer_mode = value;
 }
 
 bool player::digging() const
