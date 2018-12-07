@@ -187,14 +187,6 @@ class player : public Character
             return false;    // Overloaded for NPCs in npc.h
         }
 
-        bool is_camera_synced() const {
-            return camera_synced;
-        }
-
-        void set_camera_sync(bool sync) {
-            camera_synced = sync;
-        }
-
         /** Returns what color the player should be drawn as */
         nc_color basic_symbol_color() const override;
 
@@ -1433,6 +1425,12 @@ class player : public Character
         }
         inline void setpos( const tripoint &p ) override {
             position = p;
+            if (!g->is_observer_mode())
+                camera_position = position;
+        }
+        // Used only for observer mode purposes (see debug option)
+        inline void setcampos(const tripoint &p) {
+            camera_position = p;
         }
         tripoint view_offset;
         bool in_vehicle;       // Means player sit inside vehicle on the tile he is now
@@ -1682,10 +1680,10 @@ class player : public Character
     protected:
         // The player's position on the local map.
         tripoint position;
+        // Center of visible area. It always should be sync with position, except when observer mode is on (see debug options).
+        tripoint camera_position;
 
         trap_map known_traps;
-
-        bool camera_synced;
 
         void store( JsonOut &jsout ) const;
         void load( JsonObject &jsin );

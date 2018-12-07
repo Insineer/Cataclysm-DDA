@@ -642,6 +642,8 @@ class game
         /** Get all living player allies */
         std::vector<npc *> allies();
 
+        bool is_observer_mode() const;
+
     private:
         std::vector<std::shared_ptr<npc>> active_npc;
     public:
@@ -1095,6 +1097,9 @@ class game
         bool player_was_sleeping;
         /** Is Zone manager open or not - changes graphics of some zone tiles */
         bool zones_manager_open = false;
+
+        /** Free camera mode for debugging. See debug menu option */
+        bool observer_mode = false;
 
         std::unique_ptr<special_game> gamemode;
 

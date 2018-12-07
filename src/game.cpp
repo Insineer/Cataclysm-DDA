@@ -3334,11 +3334,11 @@ void game::debug()
             }
             break;
         case 36:
-            u.set_camera_sync(!u.is_camera_synced());
-            if (u.is_camera_synced())
-                popup("Observe mode off");
+            observer_mode = !observer_mode;
+            if (observer_mode)
+                add_msg(m_info, _("Observe mode on"));
             else
-                popup("Observe mode on");
+                add_msg(m_info, _("Observe mode off"));
             break;
     }
     catacurses::erase();
@@ -10141,8 +10141,8 @@ bool game::prompt_dangerous_tile( const tripoint &dest_loc ) const
 
 bool game::plmove( int dx, int dy, int dz )
 {
-    if (!u.is_camera_synced())
-        obsmove(dx, dy, dz);
+    if (observer_mode)
+        return obsmove(dx, dy, dz);
 
     if( ( !check_safe_mode_allowed() ) || u.has_active_mutation( trait_SHELL2 ) ) {
         if( u.has_active_mutation( trait_SHELL2 ) ) {
@@ -10436,6 +10436,7 @@ bool game::obsmove(int dx, int dy, int dz)
         u.posx() << "," << u.posy() << "," << u.posz() << ") to (" <<
         dest_loc.x << "," << dest_loc.y << "," << dest_loc.z << ")";
 
+    //u.setcampos(dest_loc);
     place_player(dest_loc);
 
     return false;
@@ -13141,6 +13142,11 @@ std::vector<npc *> game::allies()
     return get_npcs_if( [&]( const npc & guy ) {
         return guy.is_friend();
     } );
+}
+
+bool game::is_observer_mode() const 
+{
+    return observer_mode;
 }
 
 std::vector<Creature *> game::get_creatures_if( const std::function<bool( const Creature & )>
